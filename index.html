@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!--
+      Market Data Analysis Interface
+      ______________________________
+      This file defines the static document structure for the first frontend
+      prototype. Styling in done in styles.css and all interaction logic lives is in
+      app.js for keeping the markup easy to edit.
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Data Analysis</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!--
+      Main application. The page contains a single analysis workflow: 
+      1. Enter one or more stock symbols 
+      2. Run the analysis
+      3. Display the results under the entry box and button.
+    -->
+    <main class="page-shell">
+      <section class="analysis-panel" aria-labelledby="analysis-heading">
+        <h1 id="analysis-heading">Enter stocks to analyze</h1>
+
+        <!--
+          Kept intentionally minimal since ticker parsing and validation are done in app.js. 
+          This label wraps the input to keep the provide a more consistent user experience.
+        -->
+        <form class="search-form" id="analysis-form">
+          <label class="ticker-field" aria-label="Stock tickers">
+            <!--
+              This example text acts just like a custom placeholder. 
+              app.js hides it once the user has typed, which matches the designed prototype, 
+              while still allowing the input text maintain independent stypling if desired.
+            -->
+            <span class="example-text" id="example-text">
+              FIX, VRT, CLS, CAT, AMD, GOOGL, NVDA, AVGO, STRL...
+            </span>
+            <input
+              id="ticker-input"
+              autocomplete="off"
+              inputmode="latin"
+              spellcheck="false"
+              aria-describedby="form-status"
+            />
+          </label>
+
+          <button class="run-button" type="submit">
+            <span>Run Analysis</span>
+          </button>
+        </form>
+
+        <!--
+          Screen-reader friendly status region for validation, loading, and
+          completion messages. aria-live allows assistive technology to
+          updates without forcing focus away from the input.
+        -->
+        <p class="status-line" id="form-status" role="status" aria-live="polite"></p>
+
+        <!--
+          app.js holds the contents of this list. 
+          This keeps it empty in the HTML and makes it clear that the result rows 
+          are generated from analysis data.
+        -->
+        <section class="results-list" id="results-list" aria-label="Analysis results"></section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

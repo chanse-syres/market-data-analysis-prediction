@@ -1,0 +1,333 @@
+/*    __________________________________________________________________________
+     /                                                                         /|
+    /              Market Data Analysis Interface Styles                      / |
+   /                                                                         /  |
+  /_________________________________________________________________________/   |
+  |                                                                        |    /
+  |  This stylesheet matches the my prototype design.                      |   /
+  |  The goal is keeping the UI close prototype design while preserving    |  /
+  |  the practical accessibility and maintainability for the data layer.   | /
+  |________________________________________________________________________|/
+*/
+
+/*
+  Colors used across the page. 
+  Brands or states colors change, these variables will be updated before individualselectors.
+*/
+:root {
+  --page-bg: #fbfbfa;
+  --text: #242424;
+  --muted: #a9a9a9;
+  --positive: #45cc5c;
+  --negative: #ef3834;
+  --ink-border: #432828;
+  --focus: #347eea;
+  --shadow: rgba(21, 25, 30, 0.08);
+}
+
+/* Box border sizing with a fixed-width. */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+/*
+  Font is applied at the body level so form controls inherit consistently.
+*/
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* Native controls don't always inherit font styles without this reset. */
+button,
+input {
+  font: inherit;
+}
+
+/*
+  Top padding positions the form closes to composition while
+  using clamp() so the page remains usable on shorter viewports.
+*/
+.page-shell {
+  min-height: 100vh;
+  padding: clamp(5rem, 18vh, 11.5rem) 1.5rem 3rem;
+}
+
+/* Constrains main workflow w/o introducing a visual card container. */
+.analysis-panel {
+  width: min(100%, 1068px);
+  margin: 0 auto;
+}
+
+/* Heading scale for mirroring the prototype and avoiding negative letter spacing. */
+h1 {
+  margin: 0 0 2rem;
+  color: var(--positive);
+  font-size: clamp(1.85rem, 3vw, 2.35rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.15;
+  text-align: center;
+}
+
+/*
+  Two column form for layout on desktop: 
+  flexible ticker field plus fixed-width action button. 
+  The mobile media query stacks them cleanly.
+*/
+.search-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.4rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+/*
+  The visible input border is on the label wrapper, not the input itself. 
+  This allows the custom example text and the input to occupy the same visual frame.
+*/
+.ticker-field {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 5.8rem;
+  border: 5px solid var(--ink-border);
+  background: #fff;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+/* Focus is intentionally outside of the prototype border for visibility. */
+.ticker-field:focus-within {
+  outline: 3px solid rgba(52, 126, 234, 0.22);
+  outline-offset: 4px;
+}
+
+/*
+  Custom placeholder. It's just pointer-events: none for clicking and landing
+  on the underlying input, and app.js toggles the is-hidden state.
+*/
+.example-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 1.4rem;
+  color: var(--muted);
+  font-size: clamp(1.15rem, 2.1vw, 1.55rem);
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 120ms ease;
+}
+
+/* Opacity function */
+.example-text.is-hidden {
+  opacity: 0;
+}
+
+/*
+  Transparent input allows the custom example text to share the same frame.
+  text-transform keeps the tickers visually normalized while parsing in
+  app.js for performing the data normalization process.
+*/
+#ticker-input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0 1.4rem;
+  background: transparent;
+  color: var(--text);
+  font-size: clamp(1.15rem, 2.1vw, 1.55rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Primary action button. */
+.run-button {
+  min-width: 14.25rem;
+  height: 5.8rem;
+  padding: 0 1.45rem;
+  border: 5px solid var(--positive);
+  background: #fff;
+  color: var(--positive);
+  cursor: pointer;
+  font-size: clamp(1.2rem, 2.1vw, 1.55rem);
+  line-height: 1;
+  transition:
+    background 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+
+/* Hover and keyboard focus share the filled-button treatment. */
+.run-button:hover,
+.run-button:focus-visible {
+  background: var(--positive);
+  color: #fff;
+}
+
+/* Explicit focus ring keeps the keyboard navigation visible after hover styling. */
+.run-button:focus-visible {
+  outline: 3px solid rgba(52, 126, 234, 0.32);
+  outline-offset: 4px;
+}
+
+/* Small press feedback without changing layout. */
+.run-button:active {
+  transform: translateY(1px);
+}
+
+/* Disabled state is used while analysis is running. */
+.run-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+/* Reserved height prevents layout shift when status text appears. */
+.status-line {
+  min-height: 1.5rem;
+  margin: 1rem 0 0;
+  color: #6c6c6c;
+  font-size: 0.95rem;
+}
+
+/* Validation and runtime errors reuse the negative result color. */
+.status-line.is-error {
+  color: var(--negative);
+}
+
+/*
+  The Results intentionally align perfectly under the input rather than irrational spanning 
+  across the full form width.
+*/
+.results-list {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 790px);
+  margin-top: 1.35rem;
+}
+
+/*
+  Result rows are generated by app.js. Positive rows then use the default border;
+  negative rows receive an .is-negative. A future neutral/no-prediction state will add 
+  a dedicated modifier without changing this base structure.
+*/
+.result-row {
+  display: grid;
+  grid-template-columns: minmax(4.75rem, 0.8fr) minmax(10rem, 1.6fr) minmax(12rem, 1.2fr);
+  align-items: center;
+  min-height: 3.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 5px solid var(--positive);
+  background: #fff;
+  color: var(--text);
+  font-size: clamp(1.25rem, 2.35vw, 1.9rem);
+  line-height: 1.1;
+}
+
+/* Negative prediction state. */
+.result-row.is-negative {
+  border-color: var(--negative);
+}
+
+/* Symbol is emphasized because it is the primary row identifier. */
+.result-symbol {
+  font-weight: 700;
+}
+
+/* Prevents short labels like confidence from wrapping on desktop. */
+.result-outcome,
+.result-confidence {
+  white-space: nowrap;
+}
+
+/*
+  Secondary metric strip. Left intentionally smaller and sans-serif so the
+  summary row stays dominant while the supporting metrics are available.
+*/
+.metric-strip {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #e6e1dc;
+  color: #555;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+/* Allows longgg metric values to shrink inside the grid instead of overflowing it. */
+.metric {
+  min-width: 0;
+}
+
+/* Metric labels are compacted on purpose so the value remains as the visual focus. */
+.metric-label {
+  display: block;
+  color: #777;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+/* This is for tablet and phone layout: stacks the form and simplifies the result rows. */
+@media (max-width: 760px) {
+  .page-shell {
+    padding-top: 4rem;
+  }
+
+  .search-form {
+    grid-template-columns: 1fr;
+    gap: 0.95rem;
+  }
+
+  .ticker-field,
+  .run-button {
+    height: 4.8rem;
+  }
+
+  .run-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .result-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 0.8rem 0.85rem;
+  }
+
+  .metric-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Narrow-phone adjustments keep borders and metric grids from being 'cramped' */
+@media (max-width: 430px) {
+  .page-shell {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .ticker-field,
+  .run-button {
+    border-width: 4px;
+  }
+
+  .metric-strip {
+    grid-template-columns: 1fr;
+  }
+}
